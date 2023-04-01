@@ -40,3 +40,5 @@ cmake-build-debug/
 _deps
 .idea
 
+*.code-workspace
+.cache/

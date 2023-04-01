@@ -4,3 +4,6 @@
 [submodule "third-party/leveldb"]
 	path = third-party/leveldb
 	url = git@github.com:Oanikulin/leveldb.git
+[submodule "third-party/stduuid"]
+	path = third-party/stduuid
+	url = git@github.com:mariusbancila/stduuid.git

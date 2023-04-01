@@ -38,6 +38,10 @@ target_link_libraries(Key-value-lseq PUBLIC leveldb)
 add_subdirectory(third-party/yaml-cpp)
 target_link_libraries(Key-value-lseq PUBLIC yaml-cpp)
 
+#Setup stduuid
+add_subdirectory(third-party/stduuid)
+target_link_libraries(Key-value-lseq PUBLIC stduuid)
+
 if (BuildGRPC)
     include(FetchContent)
     FetchContent_Declare(
@@ -92,6 +96,7 @@ if (UseGTest)
             gtest_main
             yaml-cpp
             gtest
+            stduuid
     )
 
     add_executable(
@@ -106,6 +111,7 @@ if (UseGTest)
             gtest_main
             yaml-cpp
             gtest
+            stduuid
     )
 
     add_executable(
@@ -120,6 +126,7 @@ if (UseGTest)
             gtest_main
             yaml-cpp
             gtest
+            stduuid
     )
 
     add_executable(
@@ -131,5 +138,6 @@ if (UseGTest)
             leveldb
             gtest_main
             gtest
+            stduuid
     )
 endif()
