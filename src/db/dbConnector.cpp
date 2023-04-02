@@ -13,7 +13,7 @@
 #include "leveldb/db.h"
 #include "leveldb/status.h"
 #include "leveldb/write_batch.h"
-#include "stduuid/uuid.h"
+#include "uuid.h"
 #include "src/utils/yamlConfig.hpp"
 #include "src/db/comparator.hpp"
 #include "src/db/fullKey.hpp"
@@ -296,10 +296,10 @@ replyBatchFormat dbConnector::getByLseq(std::string lseq, int limit, LSEQ_COMPAR
     return {status, res};
 }
 
-snapshotReplyFormat dbConnector::createSnapshot() {
+createSnapshotReplyFormat dbConnector::createSnapshot() {
     auto serialized_snapshot = snapshot::serialize(seqCount);
     auto snapshot_id = generateSnapshotId(selfId);
-    auto res = put(id, serialized_snapshot);
+    auto res = put(snapshot_id, serialized_snapshot);
     return {snapshot_id, res.second};
 }
 
@@ -313,9 +313,9 @@ getSnapshotReplyFormat dbConnector::getSnapshot(const snapshotIdType& snapshot_i
     auto seq_snapshot = snapshot::parse(std::get<2>(res));
     if (!seq_snapshot.has_value()) {
         // TODO: change to custom exception
-        return {{}, leveldb::Status::NotFound("Corrupted value")}
+        return {{}, leveldb::Status::NotFound("Corrupted value")};
     }
-    return {seq_snapshot, s};
+    return {seq_snapshot.value(), s};
 }
 
 std::string dbConnector::generateLseqKey(leveldb::SequenceNumber seq, int id) {
@@ -360,7 +360,14 @@ leveldb::SequenceNumber dbConnector::lseqToSeq(const std::string& lseq) {
 }
 
 snapshotIdType dbConnector::generateSnapshotId(int id) {
-    auto snapshot_id = uuids::uuid_system_generator{}();
+    std::random_device rd;
+    auto seed_data = std::array<int, std::mt19937::state_size> {};
+    std::generate(std::begin(seed_data), std::end(seed_data), std::ref(rd));
+    std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
+    std::mt19937 generator(seq);
+    uuids::uuid_random_generator gen{generator};
+
+    uuids::uuid const snapshot_id = gen();
     std::stringstream ss;
     ss << '&' << idToString(id) << uuids::to_string(snapshot_id);
     return ss.str();

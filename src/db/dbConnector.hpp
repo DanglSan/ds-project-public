@@ -59,7 +59,7 @@ public:
 
     leveldb::SequenceNumber sequenceNumberForReplica(int id);
 
-    snapshotReplyFormat createSnapshot();
+    createSnapshotReplyFormat createSnapshot();
 
     getSnapshotReplyFormat getSnapshot(const snapshotIdType& snapshot_id);
 
@@ -79,7 +79,7 @@ public:
 
     static std::string seqToString(leveldb::SequenceNumber seq);
     
-    static snapshotIdType dbConnector::generateSnapshotId(int id);
+    static snapshotIdType generateSnapshotId(int id);
 
 protected:
 
