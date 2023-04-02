@@ -82,3 +82,25 @@ TEST_F(baseDbTest, getLSEQKey) {
     EXPECT_EQ(std::get<0>(db.get("a4")), lseq);
 
 }
+
+TEST_F(baseDbTest, getSnapshot) {
+    std::string snapshot_id = db.createSnapshot().first;
+    EXPECT_GT(snapshot_id.size(), 0);
+
+    EXPECT_TRUE(db.getSnapshot(snapshot_id).second.ok());
+}
+
+TEST_F(baseDbTest, getSnapshotAndGet) {
+    EXPECT_TRUE(db.put("testval", "testdata").second.ok());
+    EXPECT_TRUE(std::get<1>(db.get("testval")).ok());
+
+    std::string snapshot_id = db.createSnapshot().first;
+    auto snapshot = db.getSnapshot(snapshot_id).first;
+
+    EXPECT_TRUE(db.put("testval2", "testdata2").second.ok());
+
+    EXPECT_TRUE(std::get<1>(db.get("testval", snapshot)).ok());
+
+    EXPECT_TRUE(std::get<1>(db.get("testval2")).ok());
+    EXPECT_TRUE(std::get<1>(db.get("testval2", snapshot)).IsNotFound());
+}
