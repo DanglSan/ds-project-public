@@ -65,6 +65,13 @@ class LSeqDatabase final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::DBItems>> PrepareAsyncGetReplicaEvents(::grpc::ClientContext* context, const ::lseqdb::EventsRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::DBItems>>(PrepareAsyncGetReplicaEventsRaw(context, request, cq));
     }
+    virtual ::grpc::Status CreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::lseqdb::SnapshotId* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::SnapshotId>> AsyncCreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::SnapshotId>>(AsyncCreateSnapshotRequestRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::SnapshotId>> PrepareAsyncCreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::SnapshotId>>(PrepareAsyncCreateSnapshotRequestRaw(context, request, cq));
+    }
     //  System calls for synchronization
     virtual ::grpc::Status SyncGet_(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest& request, ::lseqdb::LSeq* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::LSeq>> AsyncSyncGet_(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest& request, ::grpc::CompletionQueue* cq) {
@@ -93,6 +100,8 @@ class LSeqDatabase final {
       virtual void SeekGet(::grpc::ClientContext* context, const ::lseqdb::SeekGetRequest* request, ::lseqdb::DBItems* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void GetReplicaEvents(::grpc::ClientContext* context, const ::lseqdb::EventsRequest* request, ::lseqdb::DBItems* response, std::function<void(::grpc::Status)>) = 0;
       virtual void GetReplicaEvents(::grpc::ClientContext* context, const ::lseqdb::EventsRequest* request, ::lseqdb::DBItems* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::lseqdb::SnapshotId* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::lseqdb::SnapshotId* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       //  System calls for synchronization
       virtual void SyncGet_(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest* request, ::lseqdb::LSeq* response, std::function<void(::grpc::Status)>) = 0;
       virtual void SyncGet_(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest* request, ::lseqdb::LSeq* response, ::grpc::ClientUnaryReactor* reactor) = 0;
@@ -111,6 +120,8 @@ class LSeqDatabase final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::DBItems>* PrepareAsyncSeekGetRaw(::grpc::ClientContext* context, const ::lseqdb::SeekGetRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::DBItems>* AsyncGetReplicaEventsRaw(::grpc::ClientContext* context, const ::lseqdb::EventsRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::DBItems>* PrepareAsyncGetReplicaEventsRaw(::grpc::ClientContext* context, const ::lseqdb::EventsRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::SnapshotId>* AsyncCreateSnapshotRequestRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::SnapshotId>* PrepareAsyncCreateSnapshotRequestRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::LSeq>* AsyncSyncGet_Raw(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::lseqdb::LSeq>* PrepareAsyncSyncGet_Raw(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::google::protobuf::Empty>* AsyncSyncPut_Raw(::grpc::ClientContext* context, const ::lseqdb::DBItems& request, ::grpc::CompletionQueue* cq) = 0;
@@ -147,6 +158,13 @@ class LSeqDatabase final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::lseqdb::DBItems>> PrepareAsyncGetReplicaEvents(::grpc::ClientContext* context, const ::lseqdb::EventsRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::lseqdb::DBItems>>(PrepareAsyncGetReplicaEventsRaw(context, request, cq));
     }
+    ::grpc::Status CreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::lseqdb::SnapshotId* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::lseqdb::SnapshotId>> AsyncCreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::lseqdb::SnapshotId>>(AsyncCreateSnapshotRequestRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::lseqdb::SnapshotId>> PrepareAsyncCreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::lseqdb::SnapshotId>>(PrepareAsyncCreateSnapshotRequestRaw(context, request, cq));
+    }
     ::grpc::Status SyncGet_(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest& request, ::lseqdb::LSeq* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::lseqdb::LSeq>> AsyncSyncGet_(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::lseqdb::LSeq>>(AsyncSyncGet_Raw(context, request, cq));
@@ -172,6 +190,8 @@ class LSeqDatabase final {
       void SeekGet(::grpc::ClientContext* context, const ::lseqdb::SeekGetRequest* request, ::lseqdb::DBItems* response, ::grpc::ClientUnaryReactor* reactor) override;
       void GetReplicaEvents(::grpc::ClientContext* context, const ::lseqdb::EventsRequest* request, ::lseqdb::DBItems* response, std::function<void(::grpc::Status)>) override;
       void GetReplicaEvents(::grpc::ClientContext* context, const ::lseqdb::EventsRequest* request, ::lseqdb::DBItems* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::lseqdb::SnapshotId* response, std::function<void(::grpc::Status)>) override;
+      void CreateSnapshotRequest(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::lseqdb::SnapshotId* response, ::grpc::ClientUnaryReactor* reactor) override;
       void SyncGet_(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest* request, ::lseqdb::LSeq* response, std::function<void(::grpc::Status)>) override;
       void SyncGet_(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest* request, ::lseqdb::LSeq* response, ::grpc::ClientUnaryReactor* reactor) override;
       void SyncPut_(::grpc::ClientContext* context, const ::lseqdb::DBItems* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)>) override;
@@ -195,6 +215,8 @@ class LSeqDatabase final {
     ::grpc::ClientAsyncResponseReader< ::lseqdb::DBItems>* PrepareAsyncSeekGetRaw(::grpc::ClientContext* context, const ::lseqdb::SeekGetRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::lseqdb::DBItems>* AsyncGetReplicaEventsRaw(::grpc::ClientContext* context, const ::lseqdb::EventsRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::lseqdb::DBItems>* PrepareAsyncGetReplicaEventsRaw(::grpc::ClientContext* context, const ::lseqdb::EventsRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::lseqdb::SnapshotId>* AsyncCreateSnapshotRequestRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::lseqdb::SnapshotId>* PrepareAsyncCreateSnapshotRequestRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::lseqdb::LSeq>* AsyncSyncGet_Raw(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::lseqdb::LSeq>* PrepareAsyncSyncGet_Raw(::grpc::ClientContext* context, const ::lseqdb::SyncGetRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* AsyncSyncPut_Raw(::grpc::ClientContext* context, const ::lseqdb::DBItems& request, ::grpc::CompletionQueue* cq) override;
@@ -203,6 +225,7 @@ class LSeqDatabase final {
     const ::grpc::internal::RpcMethod rpcmethod_Put_;
     const ::grpc::internal::RpcMethod rpcmethod_SeekGet_;
     const ::grpc::internal::RpcMethod rpcmethod_GetReplicaEvents_;
+    const ::grpc::internal::RpcMethod rpcmethod_CreateSnapshotRequest_;
     const ::grpc::internal::RpcMethod rpcmethod_SyncGet__;
     const ::grpc::internal::RpcMethod rpcmethod_SyncPut__;
   };
@@ -218,6 +241,7 @@ class LSeqDatabase final {
     //  Supports search only within one replica
     virtual ::grpc::Status SeekGet(::grpc::ServerContext* context, const ::lseqdb::SeekGetRequest* request, ::lseqdb::DBItems* response);
     virtual ::grpc::Status GetReplicaEvents(::grpc::ServerContext* context, const ::lseqdb::EventsRequest* request, ::lseqdb::DBItems* response);
+    virtual ::grpc::Status CreateSnapshotRequest(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::lseqdb::SnapshotId* response);
     //  System calls for synchronization
     virtual ::grpc::Status SyncGet_(::grpc::ServerContext* context, const ::lseqdb::SyncGetRequest* request, ::lseqdb::LSeq* response);
     virtual ::grpc::Status SyncPut_(::grpc::ServerContext* context, const ::lseqdb::DBItems* request, ::google::protobuf::Empty* response);
@@ -303,12 +327,32 @@ class LSeqDatabase final {
     }
   };
   template <class BaseClass>
+  class WithAsyncMethod_CreateSnapshotRequest : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_CreateSnapshotRequest() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_CreateSnapshotRequest() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSnapshotRequest(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::lseqdb::SnapshotId* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateSnapshotRequest(::grpc::ServerContext* context, ::google::protobuf::Empty* request, ::grpc::ServerAsyncResponseWriter< ::lseqdb::SnapshotId>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithAsyncMethod_SyncGet_ : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SyncGet_() {
-      ::grpc::Service::MarkMethodAsync(4);
+      ::grpc::Service::MarkMethodAsync(5);
     }
     ~WithAsyncMethod_SyncGet_() override {
       BaseClassMustBeDerivedFromService(this);
@@ -319,7 +363,7 @@ class LSeqDatabase final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSyncGet_(::grpc::ServerContext* context, ::lseqdb::SyncGetRequest* request, ::grpc::ServerAsyncResponseWriter< ::lseqdb::LSeq>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -328,7 +372,7 @@ class LSeqDatabase final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SyncPut_() {
-      ::grpc::Service::MarkMethodAsync(5);
+      ::grpc::Service::MarkMethodAsync(6);
     }
     ~WithAsyncMethod_SyncPut_() override {
       BaseClassMustBeDerivedFromService(this);
@@ -339,10 +383,10 @@ class LSeqDatabase final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSyncPut_(::grpc::ServerContext* context, ::lseqdb::DBItems* request, ::grpc::ServerAsyncResponseWriter< ::google::protobuf::Empty>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_GetValue<WithAsyncMethod_Put<WithAsyncMethod_SeekGet<WithAsyncMethod_GetReplicaEvents<WithAsyncMethod_SyncGet_<WithAsyncMethod_SyncPut_<Service > > > > > > AsyncService;
+  typedef WithAsyncMethod_GetValue<WithAsyncMethod_Put<WithAsyncMethod_SeekGet<WithAsyncMethod_GetReplicaEvents<WithAsyncMethod_CreateSnapshotRequest<WithAsyncMethod_SyncGet_<WithAsyncMethod_SyncPut_<Service > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_GetValue : public BaseClass {
    private:
@@ -452,18 +496,45 @@ class LSeqDatabase final {
       ::grpc::CallbackServerContext* /*context*/, const ::lseqdb::EventsRequest* /*request*/, ::lseqdb::DBItems* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithCallbackMethod_CreateSnapshotRequest : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_CreateSnapshotRequest() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::google::protobuf::Empty, ::lseqdb::SnapshotId>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::google::protobuf::Empty* request, ::lseqdb::SnapshotId* response) { return this->CreateSnapshotRequest(context, request, response); }));}
+    void SetMessageAllocatorFor_CreateSnapshotRequest(
+        ::grpc::MessageAllocator< ::google::protobuf::Empty, ::lseqdb::SnapshotId>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::google::protobuf::Empty, ::lseqdb::SnapshotId>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_CreateSnapshotRequest() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSnapshotRequest(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::lseqdb::SnapshotId* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateSnapshotRequest(
+      ::grpc::CallbackServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::lseqdb::SnapshotId* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithCallbackMethod_SyncGet_ : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_SyncGet_() {
-      ::grpc::Service::MarkMethodCallback(4,
+      ::grpc::Service::MarkMethodCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::lseqdb::SyncGetRequest, ::lseqdb::LSeq>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::lseqdb::SyncGetRequest* request, ::lseqdb::LSeq* response) { return this->SyncGet_(context, request, response); }));}
     void SetMessageAllocatorFor_SyncGet_(
         ::grpc::MessageAllocator< ::lseqdb::SyncGetRequest, ::lseqdb::LSeq>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::lseqdb::SyncGetRequest, ::lseqdb::LSeq>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -484,13 +555,13 @@ class LSeqDatabase final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_SyncPut_() {
-      ::grpc::Service::MarkMethodCallback(5,
+      ::grpc::Service::MarkMethodCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::lseqdb::DBItems, ::google::protobuf::Empty>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::lseqdb::DBItems* request, ::google::protobuf::Empty* response) { return this->SyncPut_(context, request, response); }));}
     void SetMessageAllocatorFor_SyncPut_(
         ::grpc::MessageAllocator< ::lseqdb::DBItems, ::google::protobuf::Empty>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::lseqdb::DBItems, ::google::protobuf::Empty>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -505,7 +576,7 @@ class LSeqDatabase final {
     virtual ::grpc::ServerUnaryReactor* SyncPut_(
       ::grpc::CallbackServerContext* /*context*/, const ::lseqdb::DBItems* /*request*/, ::google::protobuf::Empty* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_GetValue<WithCallbackMethod_Put<WithCallbackMethod_SeekGet<WithCallbackMethod_GetReplicaEvents<WithCallbackMethod_SyncGet_<WithCallbackMethod_SyncPut_<Service > > > > > > CallbackService;
+  typedef WithCallbackMethod_GetValue<WithCallbackMethod_Put<WithCallbackMethod_SeekGet<WithCallbackMethod_GetReplicaEvents<WithCallbackMethod_CreateSnapshotRequest<WithCallbackMethod_SyncGet_<WithCallbackMethod_SyncPut_<Service > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_GetValue : public BaseClass {
@@ -576,12 +647,29 @@ class LSeqDatabase final {
     }
   };
   template <class BaseClass>
+  class WithGenericMethod_CreateSnapshotRequest : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_CreateSnapshotRequest() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_CreateSnapshotRequest() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSnapshotRequest(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::lseqdb::SnapshotId* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
   class WithGenericMethod_SyncGet_ : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SyncGet_() {
-      ::grpc::Service::MarkMethodGeneric(4);
+      ::grpc::Service::MarkMethodGeneric(5);
     }
     ~WithGenericMethod_SyncGet_() override {
       BaseClassMustBeDerivedFromService(this);
@@ -598,7 +686,7 @@ class LSeqDatabase final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SyncPut_() {
-      ::grpc::Service::MarkMethodGeneric(5);
+      ::grpc::Service::MarkMethodGeneric(6);
     }
     ~WithGenericMethod_SyncPut_() override {
       BaseClassMustBeDerivedFromService(this);
@@ -690,12 +778,32 @@ class LSeqDatabase final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_CreateSnapshotRequest : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_CreateSnapshotRequest() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_CreateSnapshotRequest() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSnapshotRequest(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::lseqdb::SnapshotId* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateSnapshotRequest(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_SyncGet_ : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SyncGet_() {
-      ::grpc::Service::MarkMethodRaw(4);
+      ::grpc::Service::MarkMethodRaw(5);
     }
     ~WithRawMethod_SyncGet_() override {
       BaseClassMustBeDerivedFromService(this);
@@ -706,7 +814,7 @@ class LSeqDatabase final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSyncGet_(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -715,7 +823,7 @@ class LSeqDatabase final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SyncPut_() {
-      ::grpc::Service::MarkMethodRaw(5);
+      ::grpc::Service::MarkMethodRaw(6);
     }
     ~WithRawMethod_SyncPut_() override {
       BaseClassMustBeDerivedFromService(this);
@@ -726,7 +834,7 @@ class LSeqDatabase final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSyncPut_(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -818,12 +926,34 @@ class LSeqDatabase final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithRawCallbackMethod_CreateSnapshotRequest : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_CreateSnapshotRequest() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CreateSnapshotRequest(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_CreateSnapshotRequest() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSnapshotRequest(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::lseqdb::SnapshotId* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateSnapshotRequest(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_SyncGet_ : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_SyncGet_() {
-      ::grpc::Service::MarkMethodRawCallback(4,
+      ::grpc::Service::MarkMethodRawCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SyncGet_(context, request, response); }));
@@ -845,7 +975,7 @@ class LSeqDatabase final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_SyncPut_() {
-      ::grpc::Service::MarkMethodRawCallback(5,
+      ::grpc::Service::MarkMethodRawCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SyncPut_(context, request, response); }));
@@ -970,12 +1100,39 @@ class LSeqDatabase final {
     virtual ::grpc::Status StreamedGetReplicaEvents(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::lseqdb::EventsRequest,::lseqdb::DBItems>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_CreateSnapshotRequest : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_CreateSnapshotRequest() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::google::protobuf::Empty, ::lseqdb::SnapshotId>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::google::protobuf::Empty, ::lseqdb::SnapshotId>* streamer) {
+                       return this->StreamedCreateSnapshotRequest(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_CreateSnapshotRequest() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status CreateSnapshotRequest(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::lseqdb::SnapshotId* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedCreateSnapshotRequest(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::google::protobuf::Empty,::lseqdb::SnapshotId>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_SyncGet_ : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SyncGet_() {
-      ::grpc::Service::MarkMethodStreamed(4,
+      ::grpc::Service::MarkMethodStreamed(5,
         new ::grpc::internal::StreamedUnaryHandler<
           ::lseqdb::SyncGetRequest, ::lseqdb::LSeq>(
             [this](::grpc::ServerContext* context,
@@ -1002,7 +1159,7 @@ class LSeqDatabase final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SyncPut_() {
-      ::grpc::Service::MarkMethodStreamed(5,
+      ::grpc::Service::MarkMethodStreamed(6,
         new ::grpc::internal::StreamedUnaryHandler<
           ::lseqdb::DBItems, ::google::protobuf::Empty>(
             [this](::grpc::ServerContext* context,
@@ -1023,9 +1180,9 @@ class LSeqDatabase final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedSyncPut_(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::lseqdb::DBItems,::google::protobuf::Empty>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_GetValue<WithStreamedUnaryMethod_Put<WithStreamedUnaryMethod_SeekGet<WithStreamedUnaryMethod_GetReplicaEvents<WithStreamedUnaryMethod_SyncGet_<WithStreamedUnaryMethod_SyncPut_<Service > > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_GetValue<WithStreamedUnaryMethod_Put<WithStreamedUnaryMethod_SeekGet<WithStreamedUnaryMethod_GetReplicaEvents<WithStreamedUnaryMethod_CreateSnapshotRequest<WithStreamedUnaryMethod_SyncGet_<WithStreamedUnaryMethod_SyncPut_<Service > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_GetValue<WithStreamedUnaryMethod_Put<WithStreamedUnaryMethod_SeekGet<WithStreamedUnaryMethod_GetReplicaEvents<WithStreamedUnaryMethod_SyncGet_<WithStreamedUnaryMethod_SyncPut_<Service > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_GetValue<WithStreamedUnaryMethod_Put<WithStreamedUnaryMethod_SeekGet<WithStreamedUnaryMethod_GetReplicaEvents<WithStreamedUnaryMethod_CreateSnapshotRequest<WithStreamedUnaryMethod_SyncGet_<WithStreamedUnaryMethod_SyncPut_<Service > > > > > > > StreamedService;
 };
 
 }  // namespace lseqdb

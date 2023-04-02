@@ -37,6 +37,10 @@ message SeekGetRequest {
   optional uint32 limit = 3; // if not defined, then unlimited
 }
 
+message SnapshotId {
+  string snapshot_id = 1;
+}
+
 message DBItems {
   message DbItem {
     string lseq = 1;
@@ -55,6 +59,7 @@ service LSeqDatabase {
 //  Supports search only within one replica
   rpc SeekGet(SeekGetRequest) returns (DBItems) {}
   rpc GetReplicaEvents(EventsRequest) returns (DBItems) {}
+  rpc CreateSnapshotRequest(google.protobuf.Empty) returns (SnapshotId) {}
 
 //  System calls for synchronization
   rpc SyncGet_(SyncGetRequest) returns (LSeq) {}

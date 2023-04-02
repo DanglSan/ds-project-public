@@ -24,7 +24,7 @@ using namespace std::chrono_literals;
 dbConnector::dbConnector(YAMLConfig config)
 {
     selfId = config.getId();
-    seqCount = std::vector<leveldb::SequenceNumber>(config.getMaxReplicaId());
+    seqCount_ = std::vector<leveldb::SequenceNumber>(config.getMaxReplicaId());
     std::string filename = config.getDbFile();
     leveldb::Options options;
     options.create_if_missing = true;
@@ -33,7 +33,7 @@ dbConnector::dbConnector(YAMLConfig config)
     leveldb::Status status = leveldb::DB::Open(options, filename, &db);
     assert(status.ok());
     for (int i = 0; i < config.getMaxReplicaId(); ++i) {
-        seqCount[i] = getMaxSeqForReplica(i);
+        seqCount_[i] = getMaxSeqForReplica(i);
     }
 }
 
@@ -66,7 +66,7 @@ leveldb::SequenceNumber dbConnector::sequenceNumberForReplica(int id) {
     //better to rewrite mutex to atomics or at least sharded mutex
     //but not now
     std::lock_guard lock(mx);
-    return seqCount[id];
+    return seqCount_[id];
 }
 
 replyFormat dbConnector::put(std::string key, std::string value) {
@@ -85,7 +85,7 @@ replyFormat dbConnector::put(std::string key, std::string value) {
     }
     {
         std::lock_guard lock(mx);
-        seqCount[selfId] = seq;
+        seqCount_[selfId] = seq;
     }
     return {generateLseqKey(seq, selfId), st};
 }
@@ -104,7 +104,7 @@ replyFormat dbConnector::remove(std::string key) {
 
     {
         std::lock_guard lock(mx);
-        seqCount[selfId] = secondSeq;
+        seqCount_[selfId] = secondSeq;
     }
     return {generateLseqKey(seq, selfId), st};
 }
@@ -162,7 +162,16 @@ pureReplyValue dbConnector::get(std::string key, int id) {
     return {lseq, s, res};
 }
 
-pureReplyValue dbConnector::get(std::string key, int id, leveldb::SequenceNumber seq) {
+pureReplyValue dbConnector::get(std::string key, const snapshotType& seqCount) {
+    return get(key, selfId, seqCount);
+}
+
+pureReplyValue dbConnector::get(std::string key, int id, const snapshotType& seqCount) {
+    if (id >= seqCount.size()) {
+        return {"", leveldb::Status::NotFound("Corrupted snapshot, unknown replica."), ""};
+    }
+    auto seq = seqCount[id];
+
     leveldb::ReadOptions options;
     options.snapshot = db->GetSnapshot();
     std::unique_ptr<leveldb::Iterator> it(db->NewIterator(options));
@@ -204,7 +213,7 @@ leveldb::Status dbConnector::putBatch(const batchValues& keyValuePairs) {
         {
             std::lock_guard lk(mx);
             //if the order is wrong it is not the problem of method
-            seqCount[replicaId] = std::max(seqCount[replicaId], seq);
+            seqCount_[replicaId] = std::max(seqCount_[replicaId], seq);
         }
     }
     leveldb::Status s = db->Write(leveldb::WriteOptions(), &batch);
@@ -297,7 +306,7 @@ replyBatchFormat dbConnector::getByLseq(std::string lseq, int limit, LSEQ_COMPAR
 }
 
 createSnapshotReplyFormat dbConnector::createSnapshot() {
-    auto serialized_snapshot = snapshot::serialize(seqCount);
+    auto serialized_snapshot = snapshot::serialize(seqCount_);
     auto snapshot_id = generateSnapshotId(selfId);
     auto res = put(snapshot_id, serialized_snapshot);
     return {snapshot_id, res.second};

@@ -35,6 +35,7 @@ using lseqdb::SeekGetRequest;
 using lseqdb::SyncGetRequest;
 using lseqdb::Value;
 using lseqdb::EventsRequest;
+using lseqdb::SnapshotId;
 
 class LSeqDatabaseImpl final : public LSeqDatabase::Service {
 public:
@@ -44,6 +45,7 @@ public:
     Status Put(ServerContext* context, const PutRequest* request, LSeq* response) override;
     Status SeekGet(ServerContext* context, const SeekGetRequest* request, DBItems* response) override;
     Status GetReplicaEvents(ServerContext* context, const EventsRequest* request, DBItems* response) override;
+    Status CreateSnapshotRequest(ServerContext* context, const ::google::protobuf::Empty* request, SnapshotId* response) override;
 
 public:
     Status SyncGet_(ServerContext* context, const SyncGetRequest* request, LSeq* response) override;

@@ -14,13 +14,15 @@
 using lseqType = std::string;
 using keyType = std::string;
 using valueType = std::string;
-using snapshotIdType = std::string;
 
 using replyFormat = std::pair<lseqType, leveldb::Status>;
 using pureReplyValue = std::tuple<lseqType, leveldb::Status, valueType>;
 using batchValues = std::vector<std::tuple<lseqType, keyType, valueType>>;
 using replyBatchFormat = std::pair<leveldb::Status, batchValues>;
-using getSnapshotReplyFormat = std::pair<std::vector<leveldb::SequenceNumber>, leveldb::Status>;
+
+using snapshotIdType = std::string;
+using snapshotType = std::vector<leveldb::SequenceNumber>;
+using getSnapshotReplyFormat = std::pair<snapshotType, leveldb::Status>;
 using createSnapshotReplyFormat = std::pair<snapshotIdType, leveldb::Status>;
 
 
@@ -45,7 +47,9 @@ public:
 
     pureReplyValue get(std::string key, int id);
 
-    pureReplyValue get(std::string key, int id, leveldb::SequenceNumber seq);
+    pureReplyValue get(std::string key, const snapshotType& seqCount);
+
+    pureReplyValue get(std::string key, int id, const snapshotType& seqCount);
 
     leveldb::Status putBatch(const batchValues& keyValuePairs);
 
@@ -87,7 +91,7 @@ protected:
 
 private:
     std::mutex mx;
-    std::vector<leveldb::SequenceNumber> seqCount;
+    std::vector<leveldb::SequenceNumber> seqCount_;
     leveldb::DB* db{};
 
     int selfId;

@@ -1,5 +1,6 @@
 #include "grpc-server.h"
 
+#include <cmath>
 #include <grpcpp/client_context.h>
 #include <grpcpp/create_channel.h>
 #include <grpcpp/security/credentials.h>
@@ -19,10 +20,23 @@ LSeqDatabaseImpl::LSeqDatabaseImpl(const YAMLConfig& config, dbConnector* databa
 
 Status LSeqDatabaseImpl::GetValue(ServerContext* context, const ReplicaKey* request, Value* response) {
     pureReplyValue res;
-    if (!request->has_replica_id()) {
-        res = db->get(request->key());
+    if (!request->has_snapshot_id()) {
+        if (!request->has_replica_id()) {
+            res = db->get(request->key());
+        } else {
+            res = db->get(request->key(), request->replica_id());
+        }
     } else {
-        res = db->get(request->key(), request->replica_id());
+        auto seqCount = db->getSnapshot(request->snapshot_id());
+        if (!std::get<1>(seqCount).ok()) {
+            return {grpc::StatusCode::UNAVAILABLE, std::get<1>(seqCount).ToString()};
+        }
+
+        if (!request->has_replica_id()) {
+            res = db->get(request->key(), std::get<0>(seqCount));
+        } else {
+            res = db->get(request->key(), request->replica_id(), std::get<0>(seqCount));
+        }
     }
     if (!std::get<1>(res).ok()) {
         return {grpc::StatusCode::UNAVAILABLE, std::get<1>(res).ToString()};
@@ -77,6 +91,16 @@ Status LSeqDatabaseImpl::GetReplicaEvents(ServerContext* context, const EventsRe
         req.set_lseq(dbConnector::generateLseqKey(0, request->replica_id()));
     }
     return SeekGet(context, &req, response);
+}
+
+Status LSeqDatabaseImpl::CreateSnapshotRequest(ServerContext* context, const ::google::protobuf::Empty* request, SnapshotId* response) {
+    auto res = db->createSnapshot();
+    if (!res.second.ok()) {
+        return {grpc::StatusCode::UNAVAILABLE, res.second.ToString()};
+    }
+    
+    response->set_snapshot_id(res.first);
+    return Status::OK;
 }
 
 Status LSeqDatabaseImpl::SyncGet_(ServerContext* context, const SyncGetRequest* request, LSeq* response) {
