@@ -122,6 +122,44 @@ TEST_F(groupOperationTest, lseqSeek) {
     EXPECT_EQ(repl.second.size(), 0);
 }
 
+TEST_F(groupOperationTest, lseqSeekSnapshot) {
+    EXPECT_TRUE(db.putBatch({
+        {dbConnector::generateLseqKey(100, 2), dbConnector::generateNormalKey("abc", 2), "val"},
+        {dbConnector::generateLseqKey(200, 2), dbConnector::generateNormalKey("abc2", 2), "val2"},
+    }).ok());
+
+    auto snapshotResp = db.createSnapshot();
+    EXPECT_TRUE(snapshotResp.second.ok());
+    auto snapshot = db.getSnapshot(snapshotResp.first).first;
+
+    EXPECT_TRUE(db.putBatch({
+        {dbConnector::generateLseqKey(300, 2), dbConnector::generateNormalKey("abcc", 2), "val3"},
+        {dbConnector::generateLseqKey(400, 2), dbConnector::generateNormalKey("abcd", 2), "val4"}
+    }).ok());
+
+    replyBatchFormat repl = db.getByLseq(dbConnector::generateLseqKey(100, 2), -1, dbConnector::LSEQ_COMPARE::GREATER_EQUAL, snapshot);
+    EXPECT_TRUE(repl.first.ok());
+    EXPECT_EQ(repl.second.size(), 2);
+    EXPECT_EQ(std::get<2>(repl.second[0]), "val");
+    EXPECT_EQ(std::get<2>(repl.second[1]), "val2");
+
+    repl = db.getByLseq(dbConnector::generateLseqKey(200, 2), -1, dbConnector::LSEQ_COMPARE::GREATER, snapshot);
+    EXPECT_TRUE(repl.first.ok());
+    EXPECT_EQ(repl.second.size(), 0);
+
+    auto snapshotResp2 = db.createSnapshot();
+    EXPECT_TRUE(snapshotResp2.second.ok());
+    auto snapshot2 = db.getSnapshot(snapshotResp2.first).first;
+
+    repl = db.getByLseq(dbConnector::generateLseqKey(100, 2), -1, dbConnector::LSEQ_COMPARE::GREATER_EQUAL, snapshot2);
+    EXPECT_TRUE(repl.first.ok());
+    EXPECT_EQ(repl.second.size(), 4);
+    EXPECT_EQ(std::get<2>(repl.second[0]), "val");
+    EXPECT_EQ(std::get<2>(repl.second[1]), "val2");
+    EXPECT_EQ(std::get<2>(repl.second[2]), "val3");
+    EXPECT_EQ(std::get<2>(repl.second[3]), "val4");
+}
+
 TEST_F(groupOperationTest, groupKeyGet) {
     EXPECT_TRUE(db.putBatch({
         {dbConnector::generateLseqKey(1000, 2), dbConnector::generateNormalKey("abcde", 2), "val"},
