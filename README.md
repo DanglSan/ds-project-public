@@ -2,7 +2,7 @@
 
 ## Build
 
-Clone repository with all submodules `git clone --recurse-submodules https://github.com/Oanikulin/ds-project-dev.git`
+Clone repository with all submodules `git clone --recurse-submodules git@github.com:DanglSan/ds-project-public.git`
 
 From cloned repository, call  `mkdir build && cd build && cmake ..`. All dependencies are included automatically.
 After that code can be build using `make`. Requires at least C++17. 
