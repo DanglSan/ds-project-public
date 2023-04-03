@@ -326,7 +326,8 @@ replyBatchFormat dbConnector::getByLseq(std::string lseq, int limit, LSEQ_COMPAR
          it->Next())
     {
         auto current_lseq = it->key().ToString();
-        if (!(lseqToReplicaId(current_lseq) == lseqToReplicaId(lseq)) || lseqToSeq(current_lseq) > snapshot_seq) {
+        if (!(lseqToReplicaId(current_lseq) == lseqToReplicaId(lseq))
+                || snapshot_seq.has_value() && lseqToSeq(current_lseq) > snapshot_seq.value()) {
             break;
         }
 
