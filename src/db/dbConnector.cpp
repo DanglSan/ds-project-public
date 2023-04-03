@@ -169,7 +169,7 @@ pureReplyValue dbConnector::get(std::string key, const snapshotType& snapshot) {
 
 pureReplyValue dbConnector::get(std::string key, int id, const snapshotType& snapshot) {
     if (id >= snapshot.size()) {
-        return {"", leveldb::Status::NotFound("Corrupted snapshot, unknown replica."), ""};
+        return {"", SnapshotError("Corrupted snapshot, unknown replica."), ""};
     }
     auto seq = snapshot[id];
 
@@ -255,7 +255,7 @@ replyBatchFormat dbConnector::getValuesForKey(const std::string& key, leveldb::S
         }
 
         if (replicaId >= snapshot.size()) {
-            return {leveldb::Status::NotFound("Corrupted value"), {}};
+            return {SnapshotError("Corrupted value"), {}};
         }
         if (currentKey.getSeq() > snapshot[replicaId]) {
             if (isSnapshotReached[replicaId]) {
@@ -308,7 +308,7 @@ replyBatchFormat dbConnector::getByLseq(std::string lseq, int limit, LSEQ_COMPAR
     std::optional<leveldb::SequenceNumber> snapshot_seq;
     if (snapshot.has_value()) {
         if (replica_id >= snapshot->size()) {
-            return {leveldb::Status::NotFound("Corrupted value"), {}};
+            return {SnapshotError("Corrupted value"), {}};
         }
         
         snapshot_seq = snapshot.value()[replica_id];
@@ -364,8 +364,7 @@ getSnapshotReplyFormat dbConnector::getSnapshot(const snapshotIdType& snapshot_i
 
     auto seq_snapshot = snapshot::parse(std::get<2>(res));
     if (!seq_snapshot.has_value()) {
-        // TODO: change to custom exception
-        return {{}, leveldb::Status::NotFound("Corrupted value")};
+        return {{}, SnapshotError("Corrupted value")};
     }
     return {seq_snapshot.value(), s};
 }

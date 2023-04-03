@@ -28,3 +28,10 @@ struct snapshot {
     return seqCount;
   }
 };
+
+class SnapshotError: public leveldb::Status {
+
+public:
+  SnapshotError(const std::string& message): leveldb::Status(leveldb::Status::Corruption(message)) {}
+  
+};
