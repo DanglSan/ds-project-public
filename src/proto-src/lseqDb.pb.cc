@@ -70,6 +70,7 @@ PROTOBUF_CONSTEXPR EventsRequest::EventsRequest(
   , /*decltype(_impl_._cached_size_)*/{}
   , /*decltype(_impl_.lseq_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.key_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.snapshot_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.replica_id_)*/0
   , /*decltype(_impl_.limit_)*/0u} {}
 struct EventsRequestDefaultTypeInternal {
@@ -101,6 +102,7 @@ PROTOBUF_CONSTEXPR SeekGetRequest::SeekGetRequest(
   , /*decltype(_impl_._cached_size_)*/{}
   , /*decltype(_impl_.lseq_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.key_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.snapshot_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.limit_)*/0u} {}
 struct SeekGetRequestDefaultTypeInternal {
   PROTOBUF_CONSTEXPR SeekGetRequestDefaultTypeInternal()
@@ -209,9 +211,11 @@ const uint32_t TableStruct_lseqDb_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(p
   PROTOBUF_FIELD_OFFSET(::lseqdb::EventsRequest, _impl_.lseq_),
   PROTOBUF_FIELD_OFFSET(::lseqdb::EventsRequest, _impl_.key_),
   PROTOBUF_FIELD_OFFSET(::lseqdb::EventsRequest, _impl_.limit_),
+  PROTOBUF_FIELD_OFFSET(::lseqdb::EventsRequest, _impl_.snapshot_id_),
   ~0u,
   0,
   1,
+  3,
   2,
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::lseqdb::PutRequest, _internal_metadata_),
@@ -230,8 +234,10 @@ const uint32_t TableStruct_lseqDb_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(p
   PROTOBUF_FIELD_OFFSET(::lseqdb::SeekGetRequest, _impl_.lseq_),
   PROTOBUF_FIELD_OFFSET(::lseqdb::SeekGetRequest, _impl_.key_),
   PROTOBUF_FIELD_OFFSET(::lseqdb::SeekGetRequest, _impl_.limit_),
+  PROTOBUF_FIELD_OFFSET(::lseqdb::SeekGetRequest, _impl_.snapshot_id_),
   ~0u,
   0,
+  2,
   1,
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::lseqdb::SnapshotId, _internal_metadata_),
@@ -269,13 +275,13 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 0, 9, -1, sizeof(::lseqdb::ReplicaKey)},
   { 12, -1, -1, sizeof(::lseqdb::Value)},
   { 20, -1, -1, sizeof(::lseqdb::LSeq)},
-  { 27, 37, -1, sizeof(::lseqdb::EventsRequest)},
-  { 41, -1, -1, sizeof(::lseqdb::PutRequest)},
-  { 49, 58, -1, sizeof(::lseqdb::SeekGetRequest)},
-  { 61, -1, -1, sizeof(::lseqdb::SnapshotId)},
-  { 68, -1, -1, sizeof(::lseqdb::DBItems_DbItem)},
-  { 77, -1, -1, sizeof(::lseqdb::DBItems)},
-  { 85, -1, -1, sizeof(::lseqdb::SyncGetRequest)},
+  { 27, 38, -1, sizeof(::lseqdb::EventsRequest)},
+  { 43, -1, -1, sizeof(::lseqdb::PutRequest)},
+  { 51, 61, -1, sizeof(::lseqdb::SeekGetRequest)},
+  { 65, -1, -1, sizeof(::lseqdb::SnapshotId)},
+  { 72, -1, -1, sizeof(::lseqdb::DBItems_DbItem)},
+  { 81, -1, -1, sizeof(::lseqdb::DBItems)},
+  { 89, -1, -1, sizeof(::lseqdb::SyncGetRequest)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -297,35 +303,38 @@ const char descriptor_table_protodef_lseqDb_2eproto[] PROTOBUF_SECTION_VARIABLE(
   "\n\nreplica_id\030\002 \001(\005H\000\210\001\001\022\030\n\013snapshot_id\030\003"
   " \001(\tH\001\210\001\001B\r\n\013_replica_idB\016\n\014_snapshot_id"
   "\"$\n\005Value\022\r\n\005value\030\001 \001(\t\022\014\n\004lseq\030\002 \001(\t\"\024"
-  "\n\004LSeq\022\014\n\004lseq\030\001 \001(\t\"w\n\rEventsRequest\022\022\n"
-  "\nreplica_id\030\001 \001(\005\022\021\n\004lseq\030\002 \001(\tH\000\210\001\001\022\020\n\003"
-  "key\030\003 \001(\tH\001\210\001\001\022\022\n\005limit\030\004 \001(\rH\002\210\001\001B\007\n\005_l"
-  "seqB\006\n\004_keyB\010\n\006_limit\"(\n\nPutRequest\022\013\n\003k"
-  "ey\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"V\n\016SeekGetReques"
-  "t\022\014\n\004lseq\030\001 \001(\t\022\020\n\003key\030\002 \001(\tH\000\210\001\001\022\022\n\005lim"
-  "it\030\003 \001(\rH\001\210\001\001B\006\n\004_keyB\010\n\006_limit\"!\n\nSnaps"
-  "hotId\022\023\n\013snapshot_id\030\001 \001(\t\"x\n\007DBItems\022%\n"
-  "\005items\030\001 \003(\0132\026.lseqdb.DBItems.DbItem\022\022\n\n"
-  "replica_id\030\002 \001(\005\0322\n\006DbItem\022\014\n\004lseq\030\001 \001(\t"
-  "\022\013\n\003key\030\002 \001(\t\022\r\n\005value\030\003 \001(\t\"$\n\016SyncGetR"
-  "equest\022\022\n\nreplica_id\030\001 \001(\0052\220\003\n\014LSeqDatab"
-  "ase\022/\n\010GetValue\022\022.lseqdb.ReplicaKey\032\r.ls"
-  "eqdb.Value\"\000\022)\n\003Put\022\022.lseqdb.PutRequest\032"
-  "\014.lseqdb.LSeq\"\000\0224\n\007SeekGet\022\026.lseqdb.Seek"
-  "GetRequest\032\017.lseqdb.DBItems\"\000\022<\n\020GetRepl"
-  "icaEvents\022\025.lseqdb.EventsRequest\032\017.lseqd"
-  "b.DBItems\"\000\022E\n\025CreateSnapshotRequest\022\026.g"
-  "oogle.protobuf.Empty\032\022.lseqdb.SnapshotId"
-  "\"\000\0222\n\010SyncGet_\022\026.lseqdb.SyncGetRequest\032\014"
-  ".lseqdb.LSeq\"\000\0225\n\010SyncPut_\022\017.lseqdb.DBIt"
-  "ems\032\026.google.protobuf.Empty\"\000b\006proto3"
+  "\n\004LSeq\022\014\n\004lseq\030\001 \001(\t\"\241\001\n\rEventsRequest\022\022"
+  "\n\nreplica_id\030\001 \001(\005\022\021\n\004lseq\030\002 \001(\tH\000\210\001\001\022\020\n"
+  "\003key\030\003 \001(\tH\001\210\001\001\022\022\n\005limit\030\004 \001(\rH\002\210\001\001\022\030\n\013s"
+  "napshot_id\030\005 \001(\tH\003\210\001\001B\007\n\005_lseqB\006\n\004_keyB\010"
+  "\n\006_limitB\016\n\014_snapshot_id\"(\n\nPutRequest\022\013"
+  "\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\200\001\n\016SeekGetRe"
+  "quest\022\014\n\004lseq\030\001 \001(\t\022\020\n\003key\030\002 \001(\tH\000\210\001\001\022\022\n"
+  "\005limit\030\003 \001(\rH\001\210\001\001\022\030\n\013snapshot_id\030\004 \001(\tH\002"
+  "\210\001\001B\006\n\004_keyB\010\n\006_limitB\016\n\014_snapshot_id\"!\n"
+  "\nSnapshotId\022\023\n\013snapshot_id\030\001 \001(\t\"x\n\007DBIt"
+  "ems\022%\n\005items\030\001 \003(\0132\026.lseqdb.DBItems.DbIt"
+  "em\022\022\n\nreplica_id\030\002 \001(\005\0322\n\006DbItem\022\014\n\004lseq"
+  "\030\001 \001(\t\022\013\n\003key\030\002 \001(\t\022\r\n\005value\030\003 \001(\t\"$\n\016Sy"
+  "ncGetRequest\022\022\n\nreplica_id\030\001 \001(\0052\220\003\n\014LSe"
+  "qDatabase\022/\n\010GetValue\022\022.lseqdb.ReplicaKe"
+  "y\032\r.lseqdb.Value\"\000\022)\n\003Put\022\022.lseqdb.PutRe"
+  "quest\032\014.lseqdb.LSeq\"\000\0224\n\007SeekGet\022\026.lseqd"
+  "b.SeekGetRequest\032\017.lseqdb.DBItems\"\000\022<\n\020G"
+  "etReplicaEvents\022\025.lseqdb.EventsRequest\032\017"
+  ".lseqdb.DBItems\"\000\022E\n\025CreateSnapshotReque"
+  "st\022\026.google.protobuf.Empty\032\022.lseqdb.Snap"
+  "shotId\"\000\0222\n\010SyncGet_\022\026.lseqdb.SyncGetReq"
+  "uest\032\014.lseqdb.LSeq\"\000\0225\n\010SyncPut_\022\017.lseqd"
+  "b.DBItems\032\026.google.protobuf.Empty\"\000b\006pro"
+  "to3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_lseqDb_2eproto_deps[1] = {
   &::descriptor_table_google_2fprotobuf_2fempty_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_lseqDb_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_lseqDb_2eproto = {
-    false, false, 1077, descriptor_table_protodef_lseqDb_2eproto,
+    false, false, 1163, descriptor_table_protodef_lseqDb_2eproto,
     "lseqDb.proto",
     &descriptor_table_lseqDb_2eproto_once, descriptor_table_lseqDb_2eproto_deps, 1, 10,
     schemas, file_default_instances, TableStruct_lseqDb_2eproto::offsets,
@@ -1112,6 +1121,9 @@ class EventsRequest::_Internal {
     (*has_bits)[0] |= 2u;
   }
   static void set_has_limit(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_snapshot_id(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
 };
@@ -1130,6 +1142,7 @@ EventsRequest::EventsRequest(const EventsRequest& from)
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.lseq_){}
     , decltype(_impl_.key_){}
+    , decltype(_impl_.snapshot_id_){}
     , decltype(_impl_.replica_id_){}
     , decltype(_impl_.limit_){}};
 
@@ -1150,6 +1163,14 @@ EventsRequest::EventsRequest(const EventsRequest& from)
     _this->_impl_.key_.Set(from._internal_key(), 
       _this->GetArenaForAllocation());
   }
+  _impl_.snapshot_id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.snapshot_id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_snapshot_id()) {
+    _this->_impl_.snapshot_id_.Set(from._internal_snapshot_id(), 
+      _this->GetArenaForAllocation());
+  }
   ::memcpy(&_impl_.replica_id_, &from._impl_.replica_id_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.limit_) -
     reinterpret_cast<char*>(&_impl_.replica_id_)) + sizeof(_impl_.limit_));
@@ -1165,6 +1186,7 @@ inline void EventsRequest::SharedCtor(
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.lseq_){}
     , decltype(_impl_.key_){}
+    , decltype(_impl_.snapshot_id_){}
     , decltype(_impl_.replica_id_){0}
     , decltype(_impl_.limit_){0u}
   };
@@ -1175,6 +1197,10 @@ inline void EventsRequest::SharedCtor(
   _impl_.key_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.key_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.snapshot_id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.snapshot_id_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -1191,6 +1217,7 @@ inline void EventsRequest::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.lseq_.Destroy();
   _impl_.key_.Destroy();
+  _impl_.snapshot_id_.Destroy();
 }
 
 void EventsRequest::SetCachedSize(int size) const {
@@ -1204,12 +1231,15 @@ void EventsRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
+  if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
       _impl_.lseq_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
       _impl_.key_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _impl_.snapshot_id_.ClearNonDefaultToEmpty();
     }
   }
   _impl_.replica_id_ = 0;
@@ -1259,6 +1289,16 @@ const char* EventsRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext*
           _Internal::set_has_limit(&has_bits);
           _impl_.limit_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string snapshot_id = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          auto str = _internal_mutable_snapshot_id();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "lseqdb.EventsRequest.snapshot_id"));
         } else
           goto handle_unusual;
         continue;
@@ -1324,6 +1364,16 @@ uint8_t* EventsRequest::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(4, this->_internal_limit(), target);
   }
 
+  // optional string snapshot_id = 5;
+  if (_internal_has_snapshot_id()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_snapshot_id().data(), static_cast<int>(this->_internal_snapshot_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "lseqdb.EventsRequest.snapshot_id");
+    target = stream->WriteStringMaybeAliased(
+        5, this->_internal_snapshot_id(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1341,7 +1391,7 @@ size_t EventsRequest::ByteSizeLong() const {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
+  if (cached_has_bits & 0x00000007u) {
     // optional string lseq = 2;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
@@ -1356,6 +1406,13 @@ size_t EventsRequest::ByteSizeLong() const {
           this->_internal_key());
     }
 
+    // optional string snapshot_id = 5;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_snapshot_id());
+    }
+
   }
   // int32 replica_id = 1;
   if (this->_internal_replica_id() != 0) {
@@ -1363,7 +1420,7 @@ size_t EventsRequest::ByteSizeLong() const {
   }
 
   // optional uint32 limit = 4;
-  if (cached_has_bits & 0x00000004u) {
+  if (cached_has_bits & 0x00000008u) {
     total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_limit());
   }
 
@@ -1386,18 +1443,21 @@ void EventsRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::
   (void) cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
+  if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
       _this->_internal_set_lseq(from._internal_lseq());
     }
     if (cached_has_bits & 0x00000002u) {
       _this->_internal_set_key(from._internal_key());
     }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_set_snapshot_id(from._internal_snapshot_id());
+    }
   }
   if (from._internal_replica_id() != 0) {
     _this->_internal_set_replica_id(from._internal_replica_id());
   }
-  if (cached_has_bits & 0x00000004u) {
+  if (cached_has_bits & 0x00000008u) {
     _this->_internal_set_limit(from._internal_limit());
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -1427,6 +1487,10 @@ void EventsRequest::InternalSwap(EventsRequest* other) {
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.key_, lhs_arena,
       &other->_impl_.key_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.snapshot_id_, lhs_arena,
+      &other->_impl_.snapshot_id_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(EventsRequest, _impl_.limit_)
@@ -1704,6 +1768,9 @@ class SeekGetRequest::_Internal {
     (*has_bits)[0] |= 1u;
   }
   static void set_has_limit(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_snapshot_id(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
 };
@@ -1722,6 +1789,7 @@ SeekGetRequest::SeekGetRequest(const SeekGetRequest& from)
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.lseq_){}
     , decltype(_impl_.key_){}
+    , decltype(_impl_.snapshot_id_){}
     , decltype(_impl_.limit_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -1741,6 +1809,14 @@ SeekGetRequest::SeekGetRequest(const SeekGetRequest& from)
     _this->_impl_.key_.Set(from._internal_key(), 
       _this->GetArenaForAllocation());
   }
+  _impl_.snapshot_id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.snapshot_id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_snapshot_id()) {
+    _this->_impl_.snapshot_id_.Set(from._internal_snapshot_id(), 
+      _this->GetArenaForAllocation());
+  }
   _this->_impl_.limit_ = from._impl_.limit_;
   // @@protoc_insertion_point(copy_constructor:lseqdb.SeekGetRequest)
 }
@@ -1754,6 +1830,7 @@ inline void SeekGetRequest::SharedCtor(
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.lseq_){}
     , decltype(_impl_.key_){}
+    , decltype(_impl_.snapshot_id_){}
     , decltype(_impl_.limit_){0u}
   };
   _impl_.lseq_.InitDefault();
@@ -1763,6 +1840,10 @@ inline void SeekGetRequest::SharedCtor(
   _impl_.key_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.key_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.snapshot_id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.snapshot_id_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -1779,6 +1860,7 @@ inline void SeekGetRequest::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.lseq_.Destroy();
   _impl_.key_.Destroy();
+  _impl_.snapshot_id_.Destroy();
 }
 
 void SeekGetRequest::SetCachedSize(int size) const {
@@ -1793,8 +1875,13 @@ void SeekGetRequest::Clear() {
 
   _impl_.lseq_.ClearToEmpty();
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    _impl_.key_.ClearNonDefaultToEmpty();
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.key_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.snapshot_id_.ClearNonDefaultToEmpty();
+    }
   }
   _impl_.limit_ = 0u;
   _impl_._has_bits_.Clear();
@@ -1834,6 +1921,16 @@ const char* SeekGetRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext
           _Internal::set_has_limit(&has_bits);
           _impl_.limit_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string snapshot_id = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          auto str = _internal_mutable_snapshot_id();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "lseqdb.SeekGetRequest.snapshot_id"));
         } else
           goto handle_unusual;
         continue;
@@ -1893,6 +1990,16 @@ uint8_t* SeekGetRequest::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(3, this->_internal_limit(), target);
   }
 
+  // optional string snapshot_id = 4;
+  if (_internal_has_snapshot_id()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_snapshot_id().data(), static_cast<int>(this->_internal_snapshot_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "lseqdb.SeekGetRequest.snapshot_id");
+    target = stream->WriteStringMaybeAliased(
+        4, this->_internal_snapshot_id(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1917,7 +2024,7 @@ size_t SeekGetRequest::ByteSizeLong() const {
   }
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
+  if (cached_has_bits & 0x00000007u) {
     // optional string key = 2;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
@@ -1925,8 +2032,15 @@ size_t SeekGetRequest::ByteSizeLong() const {
           this->_internal_key());
     }
 
-    // optional uint32 limit = 3;
+    // optional string snapshot_id = 4;
     if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_snapshot_id());
+    }
+
+    // optional uint32 limit = 3;
+    if (cached_has_bits & 0x00000004u) {
       total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_limit());
     }
 
@@ -1953,11 +2067,14 @@ void SeekGetRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
     _this->_internal_set_lseq(from._internal_lseq());
   }
   cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000003u) {
+  if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
       _this->_internal_set_key(from._internal_key());
     }
     if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_snapshot_id(from._internal_snapshot_id());
+    }
+    if (cached_has_bits & 0x00000004u) {
       _this->_impl_.limit_ = from._impl_.limit_;
     }
     _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -1989,6 +2106,10 @@ void SeekGetRequest::InternalSwap(SeekGetRequest* other) {
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.key_, lhs_arena,
       &other->_impl_.key_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.snapshot_id_, lhs_arena,
+      &other->_impl_.snapshot_id_, rhs_arena
   );
   swap(_impl_.limit_, other->_impl_.limit_);
 }

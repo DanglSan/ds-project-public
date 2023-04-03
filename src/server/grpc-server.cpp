@@ -27,15 +27,15 @@ Status LSeqDatabaseImpl::GetValue(ServerContext* context, const ReplicaKey* requ
             res = db->get(request->key(), request->replica_id());
         }
     } else {
-        auto seqCount = db->getSnapshot(request->snapshot_id());
-        if (!std::get<1>(seqCount).ok()) {
-            return {grpc::StatusCode::UNAVAILABLE, std::get<1>(seqCount).ToString()};
+        auto snapshot = db->getSnapshot(request->snapshot_id());
+        if (!std::get<1>(snapshot).ok()) {
+            return {grpc::StatusCode::UNAVAILABLE, std::get<1>(snapshot).ToString()};
         }
 
         if (!request->has_replica_id()) {
-            res = db->get(request->key(), std::get<0>(seqCount));
+            res = db->get(request->key(), std::get<0>(snapshot));
         } else {
-            res = db->get(request->key(), request->replica_id(), std::get<0>(seqCount));
+            res = db->get(request->key(), request->replica_id(), std::get<0>(snapshot));
         }
     }
     if (!std::get<1>(res).ok()) {
@@ -59,10 +59,23 @@ Status LSeqDatabaseImpl::SeekGet(ServerContext* context, const SeekGetRequest* r
     replyBatchFormat res;
     int limit = request->has_limit() ? static_cast<int>(request->limit()) : -1;
     const auto& lseq = request->lseq();
-    if (request->has_key()) {
-        res = db->getValuesForKey(request->key(), dbConnector::lseqToSeq(lseq), std::stoi(dbConnector::lseqToReplicaId(lseq)), limit, dbConnector::LSEQ_COMPARE::GREATER);
+    if (!request->has_snapshot_id()) {
+        if (request->has_key()) {
+            res = db->getValuesForKey(request->key(), dbConnector::lseqToSeq(lseq), std::stoi(dbConnector::lseqToReplicaId(lseq)), limit, dbConnector::LSEQ_COMPARE::GREATER);
+        } else {
+            res = db->getByLseq(lseq, limit, dbConnector::LSEQ_COMPARE::GREATER);
+        }
     } else {
-        res = db->getByLseq(lseq, limit, dbConnector::LSEQ_COMPARE::GREATER);
+        auto snapshot = db->getSnapshot(request->snapshot_id());
+        if (!std::get<1>(snapshot).ok()) {
+            return {grpc::StatusCode::UNAVAILABLE, std::get<1>(snapshot).ToString()};
+        }
+
+        if (request->has_key()) {
+            res = db->getValuesForKey(request->key(), dbConnector::lseqToSeq(lseq), std::stoi(dbConnector::lseqToReplicaId(lseq)), limit, dbConnector::LSEQ_COMPARE::GREATER, std::get<0>(snapshot));
+        } else {
+            res = db->getByLseq(lseq, limit, dbConnector::LSEQ_COMPARE::GREATER, std::get<0>(snapshot));
+        }
     }
 
     if (!res.first.ok()) {
@@ -89,6 +102,9 @@ Status LSeqDatabaseImpl::GetReplicaEvents(ServerContext* context, const EventsRe
         req.set_lseq(request->lseq());
     } else {
         req.set_lseq(dbConnector::generateLseqKey(0, request->replica_id()));
+    }
+    if (request->has_snapshot_id()) {
+        req.set_snapshot_id(request->snapshot_id());
     }
     return SeekGet(context, &req, response);
 }

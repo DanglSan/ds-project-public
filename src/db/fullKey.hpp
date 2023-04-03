@@ -39,4 +39,12 @@ struct FullKey {
     int getReplicaId() const {
         return std::stoi(key.substr(1 + keyLength + 15));
     }
+
+    bool operator==(const FullKey& other) const {
+        return other.key == key;
+    }
+
+    bool operator!=(const FullKey& other) const {
+        return other.key != key;
+    }
 };

@@ -727,6 +727,7 @@ class EventsRequest final :
   enum : int {
     kLseqFieldNumber = 2,
     kKeyFieldNumber = 3,
+    kSnapshotIdFieldNumber = 5,
     kReplicaIdFieldNumber = 1,
     kLimitFieldNumber = 4,
   };
@@ -766,6 +767,24 @@ class EventsRequest final :
   std::string* _internal_mutable_key();
   public:
 
+  // optional string snapshot_id = 5;
+  bool has_snapshot_id() const;
+  private:
+  bool _internal_has_snapshot_id() const;
+  public:
+  void clear_snapshot_id();
+  const std::string& snapshot_id() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_snapshot_id(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_snapshot_id();
+  PROTOBUF_NODISCARD std::string* release_snapshot_id();
+  void set_allocated_snapshot_id(std::string* snapshot_id);
+  private:
+  const std::string& _internal_snapshot_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_snapshot_id(const std::string& value);
+  std::string* _internal_mutable_snapshot_id();
+  public:
+
   // int32 replica_id = 1;
   void clear_replica_id();
   int32_t replica_id() const;
@@ -800,6 +819,7 @@ class EventsRequest final :
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr lseq_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr snapshot_id_;
     int32_t replica_id_;
     uint32_t limit_;
   };
@@ -1100,6 +1120,7 @@ class SeekGetRequest final :
   enum : int {
     kLseqFieldNumber = 1,
     kKeyFieldNumber = 2,
+    kSnapshotIdFieldNumber = 4,
     kLimitFieldNumber = 3,
   };
   // string lseq = 1;
@@ -1134,6 +1155,24 @@ class SeekGetRequest final :
   std::string* _internal_mutable_key();
   public:
 
+  // optional string snapshot_id = 4;
+  bool has_snapshot_id() const;
+  private:
+  bool _internal_has_snapshot_id() const;
+  public:
+  void clear_snapshot_id();
+  const std::string& snapshot_id() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_snapshot_id(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_snapshot_id();
+  PROTOBUF_NODISCARD std::string* release_snapshot_id();
+  void set_allocated_snapshot_id(std::string* snapshot_id);
+  private:
+  const std::string& _internal_snapshot_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_snapshot_id(const std::string& value);
+  std::string* _internal_mutable_snapshot_id();
+  public:
+
   // optional uint32 limit = 3;
   bool has_limit() const;
   private:
@@ -1159,6 +1198,7 @@ class SeekGetRequest final :
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr lseq_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr key_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr snapshot_id_;
     uint32_t limit_;
   };
   union { Impl_ _impl_; };
@@ -2297,7 +2337,7 @@ inline void EventsRequest::set_allocated_key(std::string* key) {
 
 // optional uint32 limit = 4;
 inline bool EventsRequest::_internal_has_limit() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline bool EventsRequest::has_limit() const {
@@ -2305,7 +2345,7 @@ inline bool EventsRequest::has_limit() const {
 }
 inline void EventsRequest::clear_limit() {
   _impl_.limit_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline uint32_t EventsRequest::_internal_limit() const {
   return _impl_.limit_;
@@ -2315,12 +2355,80 @@ inline uint32_t EventsRequest::limit() const {
   return _internal_limit();
 }
 inline void EventsRequest::_internal_set_limit(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.limit_ = value;
 }
 inline void EventsRequest::set_limit(uint32_t value) {
   _internal_set_limit(value);
   // @@protoc_insertion_point(field_set:lseqdb.EventsRequest.limit)
+}
+
+// optional string snapshot_id = 5;
+inline bool EventsRequest::_internal_has_snapshot_id() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool EventsRequest::has_snapshot_id() const {
+  return _internal_has_snapshot_id();
+}
+inline void EventsRequest::clear_snapshot_id() {
+  _impl_.snapshot_id_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline const std::string& EventsRequest::snapshot_id() const {
+  // @@protoc_insertion_point(field_get:lseqdb.EventsRequest.snapshot_id)
+  return _internal_snapshot_id();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void EventsRequest::set_snapshot_id(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000004u;
+ _impl_.snapshot_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:lseqdb.EventsRequest.snapshot_id)
+}
+inline std::string* EventsRequest::mutable_snapshot_id() {
+  std::string* _s = _internal_mutable_snapshot_id();
+  // @@protoc_insertion_point(field_mutable:lseqdb.EventsRequest.snapshot_id)
+  return _s;
+}
+inline const std::string& EventsRequest::_internal_snapshot_id() const {
+  return _impl_.snapshot_id_.Get();
+}
+inline void EventsRequest::_internal_set_snapshot_id(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.snapshot_id_.Set(value, GetArenaForAllocation());
+}
+inline std::string* EventsRequest::_internal_mutable_snapshot_id() {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  return _impl_.snapshot_id_.Mutable(GetArenaForAllocation());
+}
+inline std::string* EventsRequest::release_snapshot_id() {
+  // @@protoc_insertion_point(field_release:lseqdb.EventsRequest.snapshot_id)
+  if (!_internal_has_snapshot_id()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  auto* p = _impl_.snapshot_id_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.snapshot_id_.IsDefault()) {
+    _impl_.snapshot_id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void EventsRequest::set_allocated_snapshot_id(std::string* snapshot_id) {
+  if (snapshot_id != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
+  _impl_.snapshot_id_.SetAllocated(snapshot_id, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.snapshot_id_.IsDefault()) {
+    _impl_.snapshot_id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:lseqdb.EventsRequest.snapshot_id)
 }
 
 // -------------------------------------------------------------------
@@ -2551,7 +2659,7 @@ inline void SeekGetRequest::set_allocated_key(std::string* key) {
 
 // optional uint32 limit = 3;
 inline bool SeekGetRequest::_internal_has_limit() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline bool SeekGetRequest::has_limit() const {
@@ -2559,7 +2667,7 @@ inline bool SeekGetRequest::has_limit() const {
 }
 inline void SeekGetRequest::clear_limit() {
   _impl_.limit_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
 inline uint32_t SeekGetRequest::_internal_limit() const {
   return _impl_.limit_;
@@ -2569,12 +2677,80 @@ inline uint32_t SeekGetRequest::limit() const {
   return _internal_limit();
 }
 inline void SeekGetRequest::_internal_set_limit(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   _impl_.limit_ = value;
 }
 inline void SeekGetRequest::set_limit(uint32_t value) {
   _internal_set_limit(value);
   // @@protoc_insertion_point(field_set:lseqdb.SeekGetRequest.limit)
+}
+
+// optional string snapshot_id = 4;
+inline bool SeekGetRequest::_internal_has_snapshot_id() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool SeekGetRequest::has_snapshot_id() const {
+  return _internal_has_snapshot_id();
+}
+inline void SeekGetRequest::clear_snapshot_id() {
+  _impl_.snapshot_id_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& SeekGetRequest::snapshot_id() const {
+  // @@protoc_insertion_point(field_get:lseqdb.SeekGetRequest.snapshot_id)
+  return _internal_snapshot_id();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void SeekGetRequest::set_snapshot_id(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.snapshot_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:lseqdb.SeekGetRequest.snapshot_id)
+}
+inline std::string* SeekGetRequest::mutable_snapshot_id() {
+  std::string* _s = _internal_mutable_snapshot_id();
+  // @@protoc_insertion_point(field_mutable:lseqdb.SeekGetRequest.snapshot_id)
+  return _s;
+}
+inline const std::string& SeekGetRequest::_internal_snapshot_id() const {
+  return _impl_.snapshot_id_.Get();
+}
+inline void SeekGetRequest::_internal_set_snapshot_id(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.snapshot_id_.Set(value, GetArenaForAllocation());
+}
+inline std::string* SeekGetRequest::_internal_mutable_snapshot_id() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.snapshot_id_.Mutable(GetArenaForAllocation());
+}
+inline std::string* SeekGetRequest::release_snapshot_id() {
+  // @@protoc_insertion_point(field_release:lseqdb.SeekGetRequest.snapshot_id)
+  if (!_internal_has_snapshot_id()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.snapshot_id_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.snapshot_id_.IsDefault()) {
+    _impl_.snapshot_id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void SeekGetRequest::set_allocated_snapshot_id(std::string* snapshot_id) {
+  if (snapshot_id != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.snapshot_id_.SetAllocated(snapshot_id, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.snapshot_id_.IsDefault()) {
+    _impl_.snapshot_id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:lseqdb.SeekGetRequest.snapshot_id)
 }
 
 // -------------------------------------------------------------------

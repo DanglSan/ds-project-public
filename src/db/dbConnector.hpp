@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <mutex>
 #include <utility>
@@ -29,7 +30,7 @@ using createSnapshotReplyFormat = std::pair<snapshotIdType, leveldb::Status>;
 class dbConnector {
 public:
 
-    enum class LSEQ_COMPARE {GREATER_EQUAL, GREATER, LESS_EQUAL, LESS};
+    enum class LSEQ_COMPARE {GREATER_EQUAL, GREATER};
 
     explicit dbConnector(YAMLConfig config);
 
@@ -47,17 +48,20 @@ public:
 
     pureReplyValue get(std::string key, int id);
 
-    pureReplyValue get(std::string key, const snapshotType& seqCount);
+    pureReplyValue get(std::string key, const snapshotType& snapshot);
 
-    pureReplyValue get(std::string key, int id, const snapshotType& seqCount);
+    pureReplyValue get(std::string key, int id, const snapshotType& snapshot);
 
     leveldb::Status putBatch(const batchValues& keyValuePairs);
 
     replyBatchFormat getByLseq(leveldb::SequenceNumber seq, int id, int limit = -1, LSEQ_COMPARE isGreater = LSEQ_COMPARE::GREATER_EQUAL);
 
-    replyBatchFormat getByLseq(std::string lseq, int limit = -1, LSEQ_COMPARE isGreater = LSEQ_COMPARE::GREATER_EQUAL);
+    replyBatchFormat getByLseq(std::string lseq, int limit = -1, LSEQ_COMPARE isGreater = LSEQ_COMPARE::GREATER_EQUAL, const std::optional<snapshotType>& snapshot = std::nullopt);
 
     replyBatchFormat getValuesForKey(const std::string& key, leveldb::SequenceNumber seq, int id, int limit = -1, LSEQ_COMPARE isGreater = LSEQ_COMPARE::GREATER_EQUAL);
+
+    replyBatchFormat getValuesForKey(const std::string& key, leveldb::SequenceNumber seq, int id,
+        int limit, LSEQ_COMPARE isGreater, const snapshotType& snapshot);
 
     replyBatchFormat getAllValuesForKey(const std::string& key, int id, int limit = -1, LSEQ_COMPARE isGreater = LSEQ_COMPARE::GREATER_EQUAL);
 

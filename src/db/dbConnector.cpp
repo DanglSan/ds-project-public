@@ -1,6 +1,7 @@
 #include "dbConnector.hpp"
 
 #include <chrono>
+#include <optional>
 #include <string>
 #include <iostream>
 #include <iomanip>
@@ -162,22 +163,27 @@ pureReplyValue dbConnector::get(std::string key, int id) {
     return {lseq, s, res};
 }
 
-pureReplyValue dbConnector::get(std::string key, const snapshotType& seqCount) {
-    return get(key, selfId, seqCount);
+pureReplyValue dbConnector::get(std::string key, const snapshotType& snapshot) {
+    return get(key, selfId, snapshot);
 }
 
-pureReplyValue dbConnector::get(std::string key, int id, const snapshotType& seqCount) {
-    if (id >= seqCount.size()) {
+pureReplyValue dbConnector::get(std::string key, int id, const snapshotType& snapshot) {
+    if (id >= snapshot.size()) {
         return {"", leveldb::Status::NotFound("Corrupted snapshot, unknown replica."), ""};
     }
-    auto seq = seqCount[id];
+    auto seq = snapshot[id];
 
     leveldb::ReadOptions options;
     options.snapshot = db->GetSnapshot();
     std::unique_ptr<leveldb::Iterator> it(db->NewIterator(options));
 
     FullKey searchValue{key, seq, id};
-    for (it->Seek(searchValue.getFullKey());
+    it->Seek(searchValue.getFullKey());
+    if (it->Valid() && FullKey(it->key().ToString()) != searchValue) {
+        it->Prev();
+    }
+
+    for (;
          it->Valid();
          it->Prev())
     {
@@ -224,6 +230,51 @@ replyBatchFormat dbConnector::getByLseq(leveldb::SequenceNumber seq, int id, int
     return getByLseq(generateLseqKey(seq, id), limit, isGreater);
 }
 
+replyBatchFormat dbConnector::getValuesForKey(const std::string& key, leveldb::SequenceNumber seq, int id,
+        int limit, LSEQ_COMPARE isGreater, const snapshotType& snapshot) {
+    size_t snapshotNotReachedCnt = snapshot.size();
+    std::vector<bool> isSnapshotReached(snapshotNotReachedCnt, false);
+
+    batchValues res;
+    int cnt = -1;
+    leveldb::ReadOptions options;
+    options.snapshot = db->GetSnapshot();
+    std::unique_ptr<leveldb::Iterator> it(db->NewIterator(options));
+    FullKey searchValue = (isGreater == LSEQ_COMPARE::GREATER ? FullKey(key, seq + 1, id) : FullKey(key, seq, id));
+    for (it->Seek(searchValue.getFullKey());
+         it->Valid() && cnt <= limit;
+         it->Next())
+    {
+        FullKey currentKey(it->key().ToString());
+        if (currentKey.getKey() != key) {
+            break;
+        }
+        int replicaId = currentKey.getReplicaId();
+        if (limit != -1) {
+            ++cnt;
+        }
+
+        if (replicaId >= snapshot.size()) {
+            return {leveldb::Status::NotFound("Corrupted value"), {}};
+        }
+        if (currentKey.getSeq() > snapshot[replicaId]) {
+            if (isSnapshotReached[replicaId]) {
+                continue;
+            }
+            isSnapshotReached[replicaId] = true;
+            if (--snapshotNotReachedCnt == 0) {
+                break;
+            }
+            continue;
+        }
+        
+        res.push_back({generateLseqKey(currentKey.getSeq(), replicaId), generateNormalKey(key, replicaId), it->value().ToString()});
+    }
+    leveldb::Status status = it->status();
+    db->ReleaseSnapshot(options.snapshot);
+    return {status, res};
+}
+
 replyBatchFormat dbConnector::getValuesForKey(const std::string& key, leveldb::SequenceNumber seq, int id, int limit, LSEQ_COMPARE isGreater) {
     batchValues res;
     int cnt = -1;
@@ -252,42 +303,33 @@ replyBatchFormat dbConnector::getAllValuesForKey(const std::string& key, int id,
     return getValuesForKey(key, 0, id, limit, isGreater);
 }
 
-replyBatchFormat dbConnector::getByLseq(std::string lseq, int limit, LSEQ_COMPARE compare) {
+replyBatchFormat dbConnector::getByLseq(std::string lseq, int limit, LSEQ_COMPARE isGreater, const std::optional<snapshotType>& snapshot) {
+    int replica_id = std::stoi(lseqToReplicaId(lseq));
+    std::optional<leveldb::SequenceNumber> snapshot_seq;
+    if (snapshot.has_value()) {
+        if (replica_id >= snapshot->size()) {
+            return {leveldb::Status::NotFound("Corrupted value"), {}};
+        }
+        
+        snapshot_seq = snapshot.value()[replica_id];
+    }
+
     batchValues res;
     int cnt = -1;
     leveldb::ReadOptions options;
     options.snapshot = db->GetSnapshot();
     std::unique_ptr<leveldb::Iterator> it(db->NewIterator(options));
-    switch (compare) {
-        case LSEQ_COMPARE::GREATER:
-            lseq = generateLseqKey(lseqToSeq(lseq) + 1, std::stoi(lseqToReplicaId(lseq)));
-        case LSEQ_COMPARE::GREATER_EQUAL:
-            it->Seek(lseq);
-            break;
-
-        case LSEQ_COMPARE::LESS: {
-            auto seq = lseqToSeq(lseq);
-            if (seq == 0) {
-                return {leveldb::Status::OK(), res};
-            }
-            lseq = generateLseqKey(seq - 1, std::stoi(lseqToReplicaId(lseq)));
-        }
-        case LSEQ_COMPARE::LESS_EQUAL:
-            it->Seek(lseq);
-            if (it->Valid() && it->key().ToString() != lseq) {
-                it->Prev();
-            }
-            break;
-    }
-
-    bool forward = compare == LSEQ_COMPARE::GREATER | compare == LSEQ_COMPARE::GREATER_EQUAL;
-    for (;
+    if (isGreater == LSEQ_COMPARE::GREATER)
+        lseq = generateLseqKey(lseqToSeq(lseq) + 1, replica_id);
+    for (it->Seek(lseq);
          it->Valid() && cnt <= limit;
-         forward ? it->Next() : it->Prev())
+         it->Next())
     {
-        if (!(lseqToReplicaId(it->key().ToString()) == lseqToReplicaId(lseq))) {
+        auto current_lseq = it->key().ToString();
+        if (!(lseqToReplicaId(current_lseq) == lseqToReplicaId(lseq)) || lseqToSeq(current_lseq) > snapshot_seq) {
             break;
         }
+
         if (limit != -1)
             ++cnt;
         int replicaId = std::stoi(lseqToReplicaId(it->key().ToString()));
